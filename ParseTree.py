@@ -39,16 +39,16 @@ def parse_expression(tokens):
     if len(tokens) == 1:
         return Node(tokens[0])
 
+    # make all () as subtrees and parsing them and return the root of the subtree
     while '(' in tokens:
         open_idx = tokens.index('(')
         close_idx = find_matching_parenthesis(tokens, open_idx)
         sub_tree = parse_expression(tokens[open_idx + 1:close_idx])
         tokens = tokens[:open_idx] + [sub_tree] + tokens[close_idx + 1:]
 
+    
     op_idx = find_lowest_precedence_operator(tokens)
-    if op_idx == -1:
-        return tokens[0] if isinstance(tokens[0], Node) else Node(tokens[0])
-
+    
     root = Node(tokens[op_idx])
     root.setLeftChild(parse_expression(tokens[:op_idx]))
     root.setRightChild(parse_expression(tokens[op_idx + 1:]))
@@ -70,7 +70,7 @@ def find_lowest_precedence_operator(tokens):
     precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
     lowest = float('inf')
     index = -1
-    for i, token in enumerate(tokens):
+    for i, token in enumerate(tokens):        # 1/3/2  example => will find the second / operator and return the index
         if isinstance(token, Node):
             continue
         if token in precedence and precedence[token] <= lowest:
@@ -78,14 +78,18 @@ def find_lowest_precedence_operator(tokens):
             index = i
     return index
 
-expression1 = ' 1 / 3 / 2 ' # 0.16666666666666666
-expression2 = '1 + ( 2 * 3 )' # 7
-expression3 = '1 + 2 * ( 3 - 4 )' # -1
-expression4 = '-1 - 2 - 3' # -6
-expression5 = '-2 * 3 + 4' # -2
-expression6 = '3 + ( 5 + 2 ) * 8' # 59
-expression7 = '3 + 2 ^ 3' # 11
 
+# Test cases ==========================================================================
+expression1 = ' 1 / 3 / 2 '                         #  0.16666666666666666 aka 1/6
+expression2 = '1 + ( 2 * 3 )'                       #  7
+expression3 = '1 + 2 * ( 3 - 4 )'                   # -1
+expression4 = '-1 - 2 - 3'                          # -6
+expression5 = '-2 * 3 + 4'                          # -2
+expression6 = '3 + ( 5 + 2 ) * 8'                   # 59
+expression7 = '3 + 2 ^ 3'                           # 11
+expression8 = '3 ^ ( 2 + 1 ) + ( 1 + 2 )'           # 30
+expression9 =  '7 - 6 * 5 ^ 4 + 1 / 3 / 2'          # 3743.etc
+expression10 = '2 * 3 + 5 * 4 - 9 / 6'              # 24.5
 
 token1 = list(expression1.split())
 token2 = list(expression2.split())
@@ -94,7 +98,11 @@ token4 = list(expression4.split())
 token5 = list(expression5.split())
 token6 = list(expression6.split())
 token7 = list(expression7.split())
+token8 = list(expression8.split())
+token9 = list(expression9.split())
+token10 = list(expression10.split())
 
+print("============================= TEST CASES ==============================")
 test = parse_expression(token1)
 print(evaluate(test))
 
@@ -114,6 +122,15 @@ test = parse_expression(token6)
 print(evaluate(test))
 
 test = parse_expression(token7)
+print(evaluate(test))
+
+test = parse_expression(token8)
+print(evaluate(test))
+
+test = parse_expression(token9)
+print(evaluate(test))
+
+test = parse_expression(token10)
 print(evaluate(test))
 
 
